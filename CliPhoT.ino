@@ -15,6 +15,10 @@
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+int minimum = 999;
+int n, maximum = 0;
+unsigned long avg = 0;
+
 void setup() {
   Serial.begin(9600);
   pinMode(15, INPUT);
@@ -34,30 +38,67 @@ void setup() {
   // Clear the buffer
   display.clearDisplay();
 
-  // Show the display buffer on the screen. You MUST call display() after
-  // drawing commands to make them visible on screen!
 
-  // display.display() is NOT necessary after every single drawing command,
-  // unless that's what you want...rather, you can batch up a bunch of
-  // drawing operations and then update the screen all at once by calling
-  // display.display(). These examples demonstrate both approaches...
 }
 
+
 void loop(){ 
+
+
   unsigned long start;
   unsigned long end;
 
   bool flash = false;
   bool click = false;
 
+  if (digitalRead(5) == LOW){
+    delay(500);
+    if (digitalRead(5) == LOW){
+      minimum = 999;
+      n = 0;
+      maximum = 0;
+      avg = 0;
+      display.clearDisplay();
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE);        // Draw white text
+      display.setCursor(0,0);
+      display.println(F("STATS"));
+      display.println(F("RESET"));
+      display.display();
+      delay(1000);
+    }
+  }
+
   display.clearDisplay();
   display.setTextSize(2);             // Normal 1:1 pixel scale
   display.setTextColor(SSD1306_WHITE);        // Draw white text
   display.setCursor(0,0);
-  display.println(F("READY"));
+  display.print(F("READY"));
+
   display.setTextSize(1);
-  display.println(F("Point the sensor"));
-  display.println(F("at muzzle flash."));
+  display.print(F(" CliPhoT"));
+  display.cp437(true);
+  display.write(15);
+  display.cp437(false);
+  display.setTextSize(2);
+  display.println();
+
+  display.setTextSize(1);
+  display.print(F("Current Avg: "));
+  
+  n > 0 ? display.print(avg/n) : display.print(0);
+  display.println(F("ms"));
+
+  display.print(F("Min: "));
+  n > 0 ? display.print(minimum) : display.print(0);
+  display.print(F("ms "));
+
+
+  display.print(F("Max: "));
+  display.print(maximum);
+  display.print(F("ms"));
+
+
   display.display();
   
   while(!click){
@@ -73,26 +114,34 @@ void loop(){
       flash = true;
     }
   }
-  
+
+  unsigned long time = (end - start)/1000;
+  avg += time;
+  n++;
+
+  if (time > maximum) maximum = time;
+  else if (time < minimum) minimum = time;
+
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0,0);
 
-  display.print((end - start)/1000);
+  display.print(time);
   display.println(F("ms"));
 
-  display.setTextSize(1);    
-  display.print((end - start));
-  display.print(F("us"));
+  display.setTextSize(2);  
+  display.print(F("avg: "));
+  display.print(avg/n);
+  display.print(F("ms"));
   display.display();
 
-  Serial.print((end - start)/1000);
+  Serial.print(time);
   Serial.print("ms, ");
   Serial.print((end - start));
   Serial.print("μs");
   Serial.println();
-  delay(2000);
+  delay(500);
 }
 
 
