@@ -1,5 +1,5 @@
 # CliPhoT 🖱️💥⏱️
-### CliPhoT is a **CLI**ck to **PHO**ton latency **T**imer
+**CLI**ck to **PHO**ton latency **T**imer
 
 ![cliphotest](https://user-images.githubusercontent.com/55419973/212254368-8acf8208-8d4b-4126-9289-03ec34fec686.gif)
 
