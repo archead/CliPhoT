@@ -15,7 +15,7 @@ CliPhoT's interface provides a quick overview of your current test run by displa
 Holding down the input key for 2 seconds after a time has been recorded will reset all current statistics.
 
 ## CliPhoT's Latency
-On it's own, CliPhoT should only add 4-8 additional microseconds of latency which should not skew the results but a significant amount.
+On it's own, CliPhoT should only add 4-8 additional microseconds of latency which should not skew the results by a significant amount.
 
 ## TODO's
 - Schematics, parts list and software guide
